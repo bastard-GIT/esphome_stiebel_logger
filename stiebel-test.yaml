@@ -1,0 +1,88 @@
+substitutions:
+  # can_tx_pin: "GPIO33"
+  # can_rx_pin: "GPIO32"
+  display_sda:            "GPIO04"
+  display_scl:            "GPIO14"
+  display_freq:           "1200kHz"
+
+  TFT_cs_pin:             "GPIO5"
+  TFT_dc_pin:             "GPIO17"
+  TFT_reset_pin:          "GPIO16"
+  TFT_clk_pin:            "GPIO18"
+  TFT_mosi_pin:           "GPIO23"
+  TFT_miso_pin:           "GPIO19"
+  TFT_spi_data_rate:      "80MHz"
+  TFT_display_h:          "240"
+  TFT_display_v:          "320"
+
+  eth0_mdc_pin:           "GPIO23"
+  eth0_mdio_pin:          "GPIO18"
+  eth0_clk_mode:          "GPIO0_IN"
+  eth0_power_pin:         "GPIO16"
+  #eth0_ip4_address:       "192.168.4.xx"
+
+esphome:
+  name: stiebel-test
+  friendly_name: stiebel-test
+  includes: 
+    - stiebel-test/ElsterTable.h
+    - stiebel-test/KElsterTable.h
+    - stiebel-test/KElsterTable.cpp
+    - stiebel-test/NUtils.h
+    - stiebel-test/NUtils.cpp
+    - stiebel-test/NTypes.h
+    - stiebel-test/heatingpump.h
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: INFO
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key_test
+
+ota:
+  platform: esphome
+  password: !secret ota_password_test
+
+time:
+  - platform: homeassistant
+    id: esptime
+    timezone: "Europe/Berlin"
+    
+#########################################
+#                                       #
+#   ETHERNET Konfiguration              #
+#                                       #
+#########################################
+ethernet:
+  type: LAN8720
+  mdc_pin: ${eth0_mdc_pin}
+  mdio_pin: ${eth0_mdio_pin}
+  clk_mode: ${eth0_clk_mode}
+  phy_addr: 1
+  power_pin: ${eth0_power_pin}
+  #use_address: ${eth0_ip4_address}
+
+#########################################
+#                                       #
+#   Packages                            #
+#                                       #
+#########################################
+packages:
+  stiebel-test-heatpump: !include stiebel-test/stiebel-test-heatpump.yaml
+
+#########################################
+#                                       #
+#   SENSORS                             #
+#                                       #
+#########################################
+sensor:
+
+          

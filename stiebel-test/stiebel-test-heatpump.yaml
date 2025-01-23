@@ -1,0 +1,178 @@
+substitutions:
+  can_id_kessel: "0x180"
+  can_id_speicher: "0x201"
+  can_id_atez: "0x280"
+  can_id_bedienmodul_1: "0x300"
+  can_id_bedienmodul_2: "0x301"
+  can_id_bedienmodul_3: "0x302"
+  can_id_bedienmodul_4: "0x303"
+  can_id_raumfernfuehler: "0x400"
+  can_id_manager: "0x480"
+  can_id_heizmodul: "0x500"
+  can_id_wpumpe: "0x514"
+  can_id_buskoppler: "0x580"
+  can_id_mischermodul_1: "0x600"
+  can_id_mischermodul_2: "0x601"
+  can_id_mischermodul_3: "0x602"
+  can_id_mischermodul_4: "0x603"
+  can_id_espclient: "0x680"
+  can_id_fremdgeraet: "0x700"
+  can_id_dcf_modul: "0x780"
+  can_tx_pin: "GPIO33"
+  can_rx_pin: "GPIO32"
+
+globals:
+
+#########################################
+#                                       #
+#   SENSORS                             #
+#                                       #
+#########################################
+sensor:
+  # TODO Elster No.
+  # Hauptmenu / INFO / Anlage /HEIZUNG
+  # 0x0C    AUSSENTEMP              0x180 -> 0x180 ✓
+  # 0x78    PUFFERISTTEMPERATUR     0x180 -> 0x180 ✓
+  #         ISTTEMPERATUR HK 1
+  # 0x01D5  PUFFERSOLLTEMPERATUR    0x180 -> 0x180 ✓
+  #         SOLLTEMPERATUR HK1
+  # 0x4EB0  evtl. puffer soll       0x601 -> 0x180
+  # 0x01C0  FESTWERTSOLLTEMPERATUR  0x180 -> 0x180
+
+  # 0x0A00  ANLAGENFROST            0x180 -> 0x180
+  # Hauptmenu / INFO / Anlage / WARMWASSER
+  # 0x0E    ISTTEMPERATUR           0x201 -> 0x180 ✓
+  # 0x03    SOLLTEMPERATUR          0x201 -> 0x180 ✓
+  # Hauptmenu / INFO / Anlage / ELEKTRISCHE NACHERWÄRMUNG
+  # 0x01AC  BIVALENZTEMPERATUR HZG  0x180 -> 0x180 ✓
+  # 0x01AD  BIVALENZTEMPERATUR WW   0x180 -> 0x180
+  # 0x01AF  EINSATZGRENZE HZG  ?    0x180 -> 0x180
+  # 0x01AF  EINSATZGRENZE WW   ?    0x180 -> 0x180
+  # Hauptmenu / Einstellungen / Heizung / Heizkreis 1
+  # 0x4EB8  KOMFORT_TEMPERATUR      0x601 -> 0x180
+  # 0x4EB9  ECO_TEMPERATUR          0x601 -> 0x180
+  # 0x4F2B  STEIGUNG_HEIZKURVE      0x601 -> 0x180
+
+  # 0x4EF1  STARTS_VERDICHTER       0x514 -> 0x180
+  # 0x4EF0  STARTS_VERDICHTER_T     0x514 -> 0x180
+  #    VERDICHTER_STARTS = STARTS_VERDICHTER + STARTS_VERDICHTER_T * 1000
+  # 0x0806  STARTS_ABTAUUNG         0x514 -> 0x180
+
+  # 0x0176  Anlagenstatus
+
+  - platform: template
+    name: "Elster Value (dec)"
+    id: debug_elster_value_dec
+    icon: "mdi:apps"
+    state_class: "measurement"
+    accuracy_decimals: 1
+
+binary_sensor:
+
+text_sensor:
+  - platform: template
+    id: debug_elster_name
+    name: "Elster Name"
+    icon: "mdi:apps"
+  - platform: template
+    id: debug_elster_msgtype
+    name: "Elster Message Type"
+    icon: "mdi:apps"
+
+  - platform: template
+    id: debug_elster_value_hex
+    name: "Elster Value (hex)"
+    icon: "mdi:apps"
+
+  - platform: template
+    id: debug_elster_log
+    name: "Elster DebugLog"
+    icon: "mdi:apps"
+
+# #########################################
+# #                                       #
+# #   canbus Konfiguration                #
+# #                                       #
+# #########################################
+# ESP32 can-interface
+# ESP32 pinout
+# https://docs.platformio.org/en/stable/_images/espressif32_debug_pinout.jpg
+# https://github.com/egnor/wt32-eth01?tab=readme-ov-file#pins-and-gotchas
+canbus:
+  - platform: esp32_can
+    id: my_caninterface
+    tx_pin: ${can_tx_pin}
+    rx_pin: ${can_rx_pin}
+    can_id: ${can_id_espclient}
+    use_extended_id: false
+    bit_rate: 50kbps
+    on_frame:
+      - can_id: 0
+        can_id_mask: 0
+        then:
+          - lambda: |-
+              #define BUFFER_SIZE 100
+              // Verarbeitung und Aktualisierung der CAN-Daten
+              processAndUpdate(can_id, x);
+              std::string value;
+              char buffer[BUFFER_SIZE];
+              // Verarbeitung der CAN-Nachricht und Abrufen des Elster-Index
+              const ElsterIndex* ei = processCanMessage(x, can_id, value);
+              // Nachrichten-Typ bestimmen
+              const char* message_type;
+              unsigned char byte1;
+              unsigned char byte2;
+              unsigned char message_type_id = x[0] & 0x0F;
+              unsigned int receiver_id;
+              receiver_id = int((x[1] & 0x0F)+( (x[0] & 0xF0 )*8));
+              // Byte-Daten für Elster-Daten extrahieren
+              if (x[2] == 0xFA) {
+                  byte1 = x[5];
+                  byte2 = x[6];
+              } else {
+                  byte1 = x[3];
+                  byte2 = x[4];
+              }
+              // Nachrichten-Typ basierend auf `message_type_id` bestimmen
+              switch (message_type_id) {
+                  case 0:
+                      message_type = "write";
+                      break;
+                  case 1:
+                      message_type = "read";
+                      break;
+                  case 2:
+                      message_type = "response";
+                      break;
+                  case 3:
+                      message_type = "ack";
+                      break;
+                  case 4:
+                      message_type = "write ack";
+                      break;
+                  case 5:
+                      message_type = "write respond";
+                      break;
+                  case 6:
+                      message_type = "system";
+                      break;
+                  case 7:
+                      message_type = "system respond";
+                      break;
+                  default:
+                      message_type = "unknown";
+              }
+              // Sende Debug-Daten über ESPHome
+              id(debug_elster_value_dec).publish_state(std::stof(value));  // Dezimalwert
+              id(debug_elster_name).publish_state(ei->Name);              // Elster-Name
+              id(debug_elster_msgtype).publish_state(message_type);       // Nachrichtentyp
+              // Elster-Wert als Hexadezimal
+              snprintf(buffer, sizeof(buffer), "0x%02X%02X", byte1, byte2);
+              id(debug_elster_value_hex).publish_state(buffer);
+              // Debug-Log für die gesamte Nachricht
+              snprintf(buffer, sizeof(buffer),
+                      "0x%03X %02X %02X %02X %02X %02X %02X %02X : 0x%03X -> 0x%03X (%s):\t%s (0x%04X) %.2f",
+                      can_id, x[0], x[1], x[2], x[3], x[4], x[5], x[6], 
+                      can_id, receiver_id, 
+                      message_type, ei->Name, ei->Index, std::stof(value));
+              id(debug_elster_log).publish_state(buffer);

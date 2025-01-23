@@ -361,3 +361,4 @@ int TranslateString(const char * & str, unsigned char elster_type)
   }
   return -1;
 }
+

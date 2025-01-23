@@ -99,7 +99,7 @@ static const ElsterIndex ElsterTable[] =
   { "INDEX_NOT_FOUND"                                  , 0x0000, 0},
   { "FEHLERMELDUNG"                                    , 0x0001, 0},
   { "KESSELSOLLTEMP"                                   , 0x0002, et_dec_val},
-  { "SPEICHERSOLLTEMP"                                 , 0x0003, et_dec_val},
+  { "WW_SOLLTEMPERATUR"                                , 0x0003, et_dec_val},   // AH: can_id_speicher @done
   { "VORLAUFSOLLTEMP"                                  , 0x0004, et_dec_val},
   { "RAUMSOLLTEMP_I"                                   , 0x0005, et_dec_val},
   { "RAUMSOLLTEMP_II"                                  , 0x0006, et_dec_val},
@@ -108,9 +108,9 @@ static const ElsterIndex ElsterTable[] =
   { "UHRZEIT"                                          , 0x0009, et_zeit},
   { "DATUM"                                            , 0x000a, et_datum},
   { "GERAETE_ID"                                       , 0x000b, et_dev_id},
-  { "AUSSENTEMP"                                       , 0x000c, et_dec_val},
+  { "AUSSENTEMP"                                       , 0x000c, et_dec_val},   // AH: can_id_kessel @done
   { "SAMMLERISTTEMP"                                   , 0x000d, et_dec_val},  // ev. KESSELISTTEMP
-  { "SPEICHERISTTEMP"                                  , 0x000e, et_dec_val},
+  { "WW_ISTTEMPERATUR"                                 , 0x000e, et_dec_val},   // AH: can_id_speicher @done
   { "VORLAUFISTTEMP"                                   , 0x000f, et_dec_val},
   { "GERAETEKONFIGURATION"                             , 0x0010, 0},
   { "RAUMISTTEMP"                                      , 0x0011, et_dec_val},
@@ -199,7 +199,7 @@ static const ElsterIndex ElsterTable[] =
   { "FEUCHTE"                                          , 0x0075, et_dec_val},
   { "PUFFERTEMP_OBEN1"                                 , 0x0076, et_dec_val},
   { "PUFFERTEMP_MITTE1"                                , 0x0077, et_dec_val},
-  { "PUFFERTEMP_UNTEN1"                                , 0x0078, et_dec_val},
+  { "PUFFERISTTEMPERATUR"                              , 0x0078, et_dec_val},   // AH: can_id_kessel @done
   { "PUFFERTEMP_OBEN2"                                 , 0x0079, et_dec_val},
   { "PUFFERTEMP_MITTE2"                                , 0x007a, et_dec_val},
   { "PUFFERTEMP_UNTEN2"                                , 0x007b, et_dec_val},
@@ -350,9 +350,9 @@ static const ElsterIndex ElsterTable[] =
   // Pufferladepumpe 2:   0x0080
   // DHC 1:               0x1000
   // DHC 2:               0x2000
-  // Warmwasserladepumpe: 0x8000
+  // Warmwasserladepumpe: 0x4000
   // EVU Sperre:          0x8000
-  { "BETRIEBS_STATUS"                                  , 0x0176, 0},
+  { "BETRIEBS_STATUS"                                  , 0x0176, 0},        // AH: can_id_kessel @done
   { "ZUSTAND_BCC"                                      , 0x0177, 0},
   { "BUSKENNUNG"                                       , 0x0178, 0},
   { "K_OS_GERAETEKONFIGURATON"                         , 0x0179, 0},
@@ -417,8 +417,8 @@ static const ElsterIndex ElsterTable[] =
   { "EINGANG_SPANNUNG"                                 , 0x01a9, 0},
   { "EINGANG_STROM"                                    , 0x01aa, 0},
   { "DONGLE_NR"                                        , 0x01ab, 0},
-  { "BIVALENTPARALLELTEMPERATUR_HZG"                   , 0x01ac, et_dec_val}, // negative Werte
-  { "BIVALENTPARALLELTEMPERATUR_WW"                    , 0x01ad, et_dec_val},
+  { "BIVALENZTEMPERATUR_HZG"                           , 0x01ac, et_dec_val}, // negative Werte // AH: can_id_kessel @done
+  { "BIVALENZTEMPERATUR_WW"                            , 0x01ad, et_dec_val},
   { "BIVALENZALTERNATIVTEMPERATUR_HZG"                 , 0x01ae, et_dec_val},
   { "BIVALENZALTERNATIVTEMPERATUR_WW"                  , 0x01af, et_dec_val},
   { "QUELLENSOLLTEMPERATUR"                            , 0x01b0, et_dec_val}, // min. Temp.?
@@ -438,7 +438,7 @@ static const ElsterIndex ElsterTable[] =
   { "ESTRICH_HALTEN_MAX_TEMPERATUR"                    , 0x01be, 0},
   { "SW_AUSSENTEMP"                                    , 0x01bf, et_dec_val},
   // Regelung / Festwertregelung
-  { "FESTWERT"                                         , 0x01c0, et_little_endian}, // Festwerttemp.
+  { "FESTWERTSOLLTEMPERATUR"                           , 0x01c0, et_little_endian}, // Festwerttemp.
   { "GESAMTERTRAG_WATT"                                , 0x01c1, 0},
   { "GESAMTERTRAG_KWATT"                               , 0x01c2, 0},
   { "GESAMTERTRAG_MWATT"                               , 0x01c3, 0},
@@ -459,7 +459,7 @@ static const ElsterIndex ElsterTable[] =
   { "PUMPENSTATUS"                                     , 0x01d2, et_little_endian},
   { "EVU"                                              , 0x01d3, 0},
   { "QUELLE_IST"                                       , 0x01d4, et_dec_val},
-  { "PUFFERSOLL"                                       , 0x01d5, et_dec_val},
+  { "PUFFERSOLLTEMPERATUR"                             , 0x01d5, et_dec_val},   // AH: can_id_kessel @done
   { "WPVORLAUFIST"                                     , 0x01d6, et_dec_val},
   { "HILFSKESSELSOLL"                                  , 0x01d7, et_dec_val}, // Ruecklaufsoll.?
   { "FUEHLER_1"                                        , 0x01d8, et_dec_val},
@@ -2000,7 +2000,7 @@ static const ElsterIndex ElsterTable[] =
   { "LZ_VERD_2_WW_BETRIEB"                             , 0x0803, 0},
   { "LZ_VERD_1_2_WW_BETRIEB"                           , 0x0804, 0},
   { "LZ_DHC12"                                         , 0x0805, 0},
-  { "STARTS_ABTAUUNG"                                  , 0x0806, 0},
+  { "STARTS_ABTAUUNG"                                  , 0x0806, et_default},
   { "ZEITDAUER_LETZTE_ABTAUUNG"                        , 0x0807, 0},
   { "ABTAUZEIT_VERD1"                                  , 0x0808, 0},
   { "ABTAUZEIT_VERD2"                                  , 0x0809, 0},
@@ -2131,30 +2131,30 @@ static const ElsterIndex ElsterTable[] =
   { "INTEGRAL_REGELABWEICHUNG_RELATIV"                 , 0x0917, 0},
   { "NIEDERDRUCK_MOP_HD"                               , 0x0918, 0},
   { "AUSLEGUNG_WE_LEISTUNG_TA"                         , 0x0919, 0},
-  { "EL_AUFNAHMELEISTUNG_WW_TAG_WH"                    , 0x091a, 0},
-  { "EL_AUFNAHMELEISTUNG_WW_TAG_KWH"                   , 0x091b, et_double_val},
-  { "EL_AUFNAHMELEISTUNG_WW_SUM_KWH"                   , 0x091c, 0},
-  { "EL_AUFNAHMELEISTUNG_WW_SUM_MWH"                   , 0x091d, et_double_val},
-  { "EL_AUFNAHMELEISTUNG_HEIZ_TAG_WH"                  , 0x091e, 0},
-  { "EL_AUFNAHMELEISTUNG_HEIZ_TAG_KWH"                 , 0x091f, et_double_val},
-  { "EL_AUFNAHMELEISTUNG_HEIZ_SUM_KWH"                 , 0x0920, 0},
-  { "EL_AUFNAHMELEISTUNG_HEIZ_SUM_MWH"                 , 0x0921, et_double_val},
+  { "EL_AUFNAHMELEISTUNG_WW_TAG_WH"                    , 0x091a, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_WW_TAG_KWH"                   , 0x091b, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_WW_SUM_KWH"                   , 0x091c, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_WW_SUM_MWH"                   , 0x091d, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_HEIZ_TAG_WH"                  , 0x091e, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_HEIZ_TAG_KWH"                 , 0x091f, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_HEIZ_SUM_KWH"                 , 0x0920, et_default},  // AH: can_id_wpumpe @done
+  { "EL_AUFNAHMELEISTUNG_HEIZ_SUM_MWH"                 , 0x0921, et_default},  // AH: can_id_wpumpe @done
   { "WAERMEERTRAG_2WE_WW_TAG_WH"                       , 0x0922, 0},
-  { "WAERMEERTRAG_2WE_WW_TAG_KWH"                      , 0x0923, et_double_val},
+  { "WAERMEERTRAG_2WE_WW_TAG_KWH"                      , 0x0923, 0},
   { "WAERMEERTRAG_2WE_WW_SUM_KWH"                      , 0x0924, 0},
-  { "WAERMEERTRAG_2WE_WW_SUM_MWH"                      , 0x0925, et_double_val},
+  { "WAERMEERTRAG_2WE_WW_SUM_MWH"                      , 0x0925, 0},
   { "WAERMEERTRAG_2WE_HEIZ_TAG_WH"                     , 0x0926, 0},
-  { "WAERMEERTRAG_2WE_HEIZ_TAG_KWH"                    , 0x0927, et_double_val},
+  { "WAERMEERTRAG_2WE_HEIZ_TAG_KWH"                    , 0x0927, 0},
   { "WAERMEERTRAG_2WE_HEIZ_SUM_KWH"                    , 0x0928, 0},
-  { "WAERMEERTRAG_2WE_HEIZ_SUM_MWH"                    , 0x0929, et_double_val},
+  { "WAERMEERTRAG_2WE_HEIZ_SUM_MWH"                    , 0x0929, 0},
   { "WAERMEERTRAG_WW_TAG_WH"                           , 0x092a, 0},
-  { "WAERMEERTRAG_WW_TAG_KWH"                          , 0x092b, et_double_val},
+  { "WAERMEERTRAG_WW_TAG_KWH"                          , 0x092b, 0},
   { "WAERMEERTRAG_WW_SUM_KWH"                          , 0x092c, 0},
-  { "WAERMEERTRAG_WW_SUM_MWH"                          , 0x092d, et_double_val},
+  { "WAERMEERTRAG_WW_SUM_MWH"                          , 0x092d, 0},
   { "WAERMEERTRAG_HEIZ_TAG_WH"                         , 0x092e, 0},
-  { "WAERMEERTRAG_HEIZ_TAG_KWH"                        , 0x092f, et_double_val},
+  { "WAERMEERTRAG_HEIZ_TAG_KWH"                        , 0x092f, 0},
   { "WAERMEERTRAG_HEIZ_SUM_KWH"                        , 0x0930, 0},
-  { "WAERMEERTRAG_HEIZ_SUM_MWH"                        , 0x0931, et_double_val},
+  { "WAERMEERTRAG_HEIZ_SUM_MWH"                        , 0x0931, 0},
   { "BUSKENNUNG_HEIZMODUL0"                            , 0x0932, 0},
   { "KUEHLEN_AUS_BEI_WW"                               , 0x0933, 0},
   { "KUEHL_HYSTERESEZEIT"                              , 0x0934, 0},
@@ -3415,6 +3415,8 @@ static const ElsterIndex ElsterTable[] =
   { "ZEITPROG_4_MO_DO"                                 , 0x23b0, 0},
   { "ZEITPROG_4_MO_DO_SCHALT_2"                        , 0x23b1, 0},
   { "ZEITPROG_4_MO_DO_SCHALT_3"                        , 0x23b2, 0},
+  { "STARTS_VERDICHTER_H"                              , 0x4ef0, et_default},   // AH: can_id_wpumpe @done
+  { "STARTS_VERDICHTER_L"                              , 0x4ef1, et_default},   // AH: can_id_wpumpe @done
   { "HF_MONITOR_TYP"                                   , 0xc34f, 0},
   { "START_BEREICH_SOFTWARE_SIMULATION"                , 0xc350, 0},
   { "SOFTWARE_SIMULATION_0"                            , 0xc351, 0},
@@ -3422,7 +3424,7 @@ static const ElsterIndex ElsterTable[] =
   { "SOFTWARE_SIMULATION_2"                            , 0xc353, 0},
   { "SOFTWARE_SIMULATION_3"                            , 0xc354, 0},
   { "SOFTWARE_SIMULATION_4"                            , 0xc355, 0},
-  { "SOFTWARE_SIMULATION_5"                            , 0xc356, 0},
+  { "BETRIEBS_STATUS_2"                                , 0xc356, 0}, //test kr0ner
   { "SOFTWARE_SIMULATION_6"                            , 0xc357, 0},
   { "SOFTWARE_SIMULATION_7"                            , 0xc358, 0},
   { "SOFTWARE_SIMULATION_8"                            , 0xc359, 0},
@@ -3810,11 +3812,12 @@ static const ErrorIndex BetriebsartList[] =
 {
   { 0x0000, "Notbetrieb" },
   { 0x0100, "Bereitschaft" }, 
-  { 0x0200, "Programmbetrieb" },
-  { 0x0300, "Komfortbetrieb" },
-  { 0x0400, "Eco-Betrieb" },
+  { 0x0200, "Automatik" },
+  { 0x0300, "Tagbetrieb" },
+  { 0x0400, "Absenkbetrieb" },
   { 0x0500, "Warmwasser" }
 };
 
 #endif
+
 

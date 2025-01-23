@@ -170,3 +170,4 @@ bool GetDouble(const char * & Ptr, double & res)
 
 
 
+
