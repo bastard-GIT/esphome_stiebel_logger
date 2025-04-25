@@ -251,7 +251,7 @@ static const ElsterIndex ElsterTable[] =
 
   // PROGRAMMSCHALTER: 
   // Positive Antwort von {0x180, 0x201, 0x301} 
-  // Negative Antwort von {0x302, 0x303} -255
+  // Negative Antwort von {0x100, 0x302, 0x303} -255
   // Notbetrieb     0x0000
   // Bereitschaft   0x0100
   // Automatik      0x0200
