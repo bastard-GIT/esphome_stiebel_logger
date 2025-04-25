@@ -1,7 +1,7 @@
 
 /*
- *  Copyright (C) 2023 Bastian Stahmer, based heavily on the great work of Jürg Müller, CH-5524 (see below)
- *  Copyright (C) 2014 Jürg Müller, CH-5524
+ *  Copyright (C) 2023 Bastian Stahmer, based heavily on the great work of JÃ¼rg MÃ¼ller, CH-5524 (see below)
+ *  Copyright (C) 2014 JÃ¼rg MÃ¼ller, CH-5524
  * 
  *  This file is part of ha-stiebel-control.
  *  ha-stiebel-control is free software: : you can redistribute it and/or modify
@@ -66,9 +66,9 @@ typedef struct
 
 typedef enum
 {
-  // Die Reihenfolge muss mit ElsterTypeStr übereinstimmen!
+  // Die Reihenfolge muss mit ElsterTypeStr Ã¼bereinstimmen!
   et_default = 0,
-  et_dec_val,       // Auflösung: xx.x / auch neg. Werte sind möglich
+  et_dec_val,       // AuflÃ¶sung: xx.x / auch neg. Werte sind mÃ¶glich
   et_cent_val,      // x.xx
   et_mil_val,       // x.xxx
   et_byte,
@@ -116,7 +116,7 @@ static const ElsterIndex ElsterTable[] =
   { "RAUMISTTEMP"                                      , 0x0011, et_dec_val},
   { "VERSTELLTE_RAUMSOLLTEMP"                          , 0x0012, et_dec_val},
   { "KOMFORT_TEMPERATUR_WW"                            , 0x0013, et_dec_val},   // 0x201
-  // beim Ändern oder im MENU HAUPT->EINST.->WW->WW_TEMP:
+  // beim Ã„ndern oder im MENU HAUPT->EINST.->WW->WW_TEMP:
   // 100 -> 201: 40 01 13 02 29 00 00 -> neuen Wert schreiben
   // 100 -> 201: 41 01 F8 00 13 00 00
   // 100 -> 201: 41 01 F9 00 13 00 00
@@ -248,13 +248,17 @@ static const ElsterIndex ElsterTable[] =
   { "RAUMEINFLUSS"                                     , 0x010f, 0},
   { "MAX_VORVERLEGUNG"                                 , 0x0110, 0},
   { "HZK_KURVENABSTAND"                                , 0x0111, et_dec_val},
+
+  // PROGRAMMSCHALTER: 
+  // Positive Antwort von {0x180, 0x201, 0x301} 
+  // Negative Antwort von {0x302, 0x303} -255
   // Notbetrieb     0x0000
   // Bereitschaft   0x0100
   // Automatik      0x0200
   // Tagbetrieb     0x0300
   // Absenkbetrieb  0x0400
   // Warmwasser     0x0500
-  { "PROGRAMMSCHALTER"                                 , 0x0112, et_betriebsart}, // @todo: die Einstellmöglichkeiten rausfinden
+  { "PROGRAMMSCHALTER"                                 , 0x0112, et_betriebsart}, // @todo: die EinstellmÃ¶glichkeiten rausfinden
   // GERMAN         0x0000
   // ENGISH         0x0100
   // FRANZ          0x0200 ...
@@ -394,7 +398,7 @@ static const ElsterIndex ElsterTable[] =
   { "BRENNSTOFFVERBRAUCH_BRENNER1"                     , 0x0196, 0},
   { "BRENNSTOFFVERBRAUCH_BRENNER2"                     , 0x0197, 0},
   { "MIN_SOLAR_SPEICHERTEMP"                           , 0x0198, 0},
-  // Wörsty:
+  // WÃ¶rsty:
   // 0x500   0x0199: 0x00f3    0x019a: 0x0007
   // 0x480   0x0199: 0xa500    0x019a: 0x1700
   { "SOFTWARE_NUMMER"                                  , 0x0199, 0},
@@ -2372,7 +2376,7 @@ static const ElsterIndex ElsterTable[] =
   { "BRENNER2LAUFZEIT"                                 , 0x0a04, 0},
   { "BRENNER2STARTS"                                   , 0x0a05, 0},
   { "ECO_TEMPERATUR_WW"                                , 0x0a06, et_dec_val},  // 0x201
-  // beim Ändern oder im MENU HAUPT->EINST.->WW->WW_TEMP:
+  // beim Ã„ndern oder im MENU HAUPT->EINST.->WW->WW_TEMP:
   // 100 -> 201: 40 01 FA 0A 06 02 22 -> neuen Wert schreiben
   // 100 -> 201: 41 01 F8 0A 06 00 00
   // 100 -> 201: 41 01 F9 0A 06 00 00
@@ -2411,7 +2415,7 @@ static const ElsterIndex ElsterTable[] =
   // Heizkreispumpe:  0x0020
   // Pufferladepunpe: 0x0040
   // Quellenpumpe:    0x0100
-  // Kühlen:          0x0200
+  // KÃ¼hlen:          0x0200
   { "SAMMEL_RELAISSTATUS"                              , 0x0a20, 0},
   { "PARAMETER_KONFIGURATION"                          , 0x0a21, 0},
   { "EBUS_STROMUEBERSCHUSS"                            , 0x0a22, 0},
@@ -65743,12 +65747,13 @@ static const ErrorIndex ErrorList[] =
 
 static const ErrorIndex BetriebsartList[] =
 {
-  { 0x0000, "Notbetrieb" },
-  { 0x0100, "Bereitschaft" }, 
-  { 0x0200, "Automatik" },
-  { 0x0300, "Tagbetrieb" },
-  { 0x0400, "Absenkbetrieb" },
-  { 0x0500, "Warmwasser" }
+  { 0x0000, "TBD" }, 
+  { 0x0100, "Bereitschaftsbetrieb" }, 
+  { 0x0200, "Programmbetrieb" },
+  { 0x0300, "Komfortbetrieb" },
+  { 0x0400, "ECO-Betrieb" },
+  { 0x0500, "Warmwasserbetrieb" },
+  { 0x0600, "Notbetrieb" }
 };
 
 #endif
